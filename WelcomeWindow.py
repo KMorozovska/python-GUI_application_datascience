@@ -1,5 +1,6 @@
 from SelectProductsWindow import *
 
+
 class WelcomeWindow(ttk.Frame):
 
     def __init__(self, master):
@@ -19,7 +20,7 @@ class WelcomeWindow(ttk.Frame):
         title.place(x=0, y=30)
 
 
-        b2 = ttk.Button(self,text="Zbadaj korelacje pomiędzy produktami",command=lambda : self.okienko_korelacji())
+        b2 = ttk.Button(self,text="Zbadaj korelacje pomiędzy produktami",command=lambda : self.open_product_window())
         b2.place(x=115, y=200)
 
         b3 = ttk.Button(self, text="Sprawdź historię popytu")
@@ -47,9 +48,8 @@ class WelcomeWindow(ttk.Frame):
                         )
 
 
-    def okienko_korelacji(self):
+    def open_product_window(self):
         for widget in self.master.winfo_children():
             widget.destroy()
 
         SelectProductsWindow(self.master)
-        print("kasia")

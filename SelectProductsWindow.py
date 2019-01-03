@@ -1,5 +1,7 @@
 from tkinter import *
 import tkinter.ttk as ttk
+from ProduceData import *
+from AutocompleteEntry import *
 
 
 class SelectProductsWindow(ttk.Frame):
@@ -14,11 +16,13 @@ class SelectProductsWindow(ttk.Frame):
 
         self.pack(fill=BOTH, expand=True)
 
+        self.product_list = []
+
         self.layout()
 
     def layout(self):
 
-        b1 = ttk.Button(self, text="Powrót")
+        b1 = ttk.Button(self, text="Powrót",command=lambda : self.back_to_mainwindow())
         b1.place(x=10, y=20)
 
         title = ttk.Label(self, text="Analiza \nnajchętniej kupowanych razem \nproduktów", style="title.TLabel")
@@ -26,47 +30,32 @@ class SelectProductsWindow(ttk.Frame):
 
 
         l7 = ttk.Label(self, text="Przeprowadź analizę na podstawie danych:", style="txt.TLabel")
-        l7.place(x=10, y=160)
+        l7.place(x=20, y=180)
 
-        self.var = IntVar()
-        self.var.set(1)
-        R1 = Radiobutton(self, text="Z mojej lokalizacji", variable=self.var, value=1)
-        R1.pack(anchor=W)
-        R1.place(x=20, y=190)
+        self.choose_datasource_buttons = IntVar()
+        self.choose_datasource_buttons.set(1)
+        self.R1 = Radiobutton(self, text="Z mojej lokalizacji", variable=self.choose_datasource_buttons, value=1,command=selected(self))
+        self.R1.pack(anchor=W)
+        self.R1.place(x=30, y=210)
 
-        R2 = Radiobutton(self, text="Ze wszystkich dostępnych danych", variable=self.var, value=2)
-        R2.pack(anchor=W)
-        R2.place(x=20, y=210)
+        self.R2 = Radiobutton(self, text="Ze wszystkich dostępnych danych", variable=self.choose_datasource_buttons, value=2,command=selected(self))
+        self.R2.pack(anchor=W)
+        self.R2.place(x=30, y=230)
 
+        b2 = ttk.Button(self, text="Ok", command=lambda: self.ok_button_clicked())
+        b2.place(x=300, y=227)
 
-        #l2 = ttk.Label(self, text="Lokalizacja:", style="txt.TLabel")
-        #l2.place(x=10, y=350)
+        l2 = ttk.Label(self, text="Wpisz produkt, który Cię interesuje:", style="txt.TLabel")
+        l2.place(x=20, y=270)
 
-        #page1 = IntVar()
-        #page1.set("")
-        #e2 = Entry(self, textvariable=page1, bg="#CFD8DC", fg="#455A64", font="Arial 10 bold")
-        #e2.place(x=10, y=370, width=150)
-
-
-        l1 = ttk.Label(self, text="Przegladaj produkty:", style="txt.TLabel")
-        l1.place(x=10, y=270)
-
-        # Create a Tkinter variable - dropdown list
-        tkvar = StringVar()
-        # Dictionary with options
-        choices = {'Pizza', 'Lasagne', 'Fries', 'Fish', 'Potatoe'}
-        tkvar.set('Pizza')  # set the default option
-        popupMenu = OptionMenu(self, tkvar, *choices)
-        # Label(self, text="Choose a dish").grid(row=1, column=1)
-        popupMenu.grid(row=2, column=1)
-        popupMenu.place(x=30, y=300)
+        page1 = IntVar()
+        page1.set("")
+        self.product_entry = Entry(self,state='disabled')
+        self.product_entry.place(x=30, y=320, width=150)
 
 
-        b2 = ttk.Button(self, text="Start")
-        b2.place(x=220, y=400)
-
-        #b3 = ttk.Button(self, text="Stop")
-        #b3.place(x=120, y=415)
+        b3 = ttk.Button(self, text="Start")
+        b3.place(x=220, y=400)
 
         # ----------- STYLES ------------
 
@@ -107,4 +96,33 @@ class SelectProductsWindow(ttk.Frame):
                         foreground="#B0BEC5",
                         font="Arial 12",
                         )
+
+    def back_to_mainwindow(self):
+        for widget in self.master.winfo_children():
+            widget.destroy()
+
+        #WelcomeWindow(self.master)
+
+    def ok_button_clicked(self):
+
+        print("Chosen option is: " + str(self.choose_datasource_buttons.get()))
+        self.R1.configure(state=DISABLED)
+        self.R2.configure(state=DISABLED)
+
+        if self.choose_datasource_buttons.get() == 2:
+            self.chosen_datasource = "all"
+            self.load_data()
+            self.product_entry = AutocompleteEntry(self.product_list,self,state='normal')
+            self.product_entry.place(x=30, y=320, width=150)
+        else:
+            print("TODO - popup window z pytaniem o lokalizacje")
+
+
+    def load_data(self):
+        produced_data = ProduceData()
+        self.product_list = produced_data.list_of_products(self.chosen_datasource)
+
+
+def selected(self):
+    print(self.choose_datasource_buttons.get())
 
