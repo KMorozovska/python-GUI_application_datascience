@@ -15,9 +15,7 @@ class SelectProductsWindow(ttk.Frame):
         self.master.title("Żabka")
 
         self.pack(fill=BOTH, expand=True)
-
         self.product_list = []
-
         self.layout()
 
     def layout(self):
@@ -112,10 +110,19 @@ class SelectProductsWindow(ttk.Frame):
         if self.choose_datasource_buttons.get() == 2:
             self.chosen_datasource = "all"
             self.load_data()
-            self.product_entry = AutocompleteEntry(self.product_list,self,state='normal')
-            self.product_entry.place(x=30, y=320, width=150)
+
         else:
-            print("TODO - popup window z pytaniem o lokalizacje")
+            popup = LocationEntryPopup(self.master)
+            self.master.wait_window(popup.top)
+            print('wpisana wartosc lokalizacji: ' + popup.value)
+
+            # przykladowo : LOK_6883
+
+            self.chosen_datasource = popup.value
+            self.load_data()
+
+        self.product_entry = AutocompleteEntry(self.product_list, self, state='normal')
+        self.product_entry.place(x=30, y=320, width=150)
 
 
     def load_data(self):
@@ -126,3 +133,19 @@ class SelectProductsWindow(ttk.Frame):
 def selected(self):
     print(self.choose_datasource_buttons.get())
 
+
+class LocationEntryPopup(Frame):
+    def __init__(self, master=None):
+        super().__init__(master)
+
+        self.top = Toplevel(master)
+        self.label = Label(self.top, text="Wpisz kod lokalizacji")
+        self.label.pack()
+        self.entry = Entry(self.top)
+        self.entry.pack()
+        self.button = Button(self.top, text='Ok', command=self.closing_popup)
+        self.button.pack()
+
+    def closing_popup(self):
+        self.value = self.entry.get()
+        self.top.destroy()
