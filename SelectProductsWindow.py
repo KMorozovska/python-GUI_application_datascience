@@ -1,7 +1,8 @@
-from tkinter import *
 import tkinter.ttk as ttk
 from ProduceData import *
 from AutocompleteEntry import *
+from tkinter.messagebox import showinfo
+from EvaluateWindow import *
 
 
 class SelectProductsWindow(ttk.Frame):
@@ -44,7 +45,7 @@ class SelectProductsWindow(ttk.Frame):
         b2.place(x=300, y=227)
 
         l2 = ttk.Label(self, text="Wpisz produkt, który Cię interesuje:", style="txt.TLabel")
-        l2.place(x=20, y=270)
+        l2.place(x=20, y=285)
 
         page1 = IntVar()
         page1.set("")
@@ -52,8 +53,8 @@ class SelectProductsWindow(ttk.Frame):
         self.product_entry.place(x=30, y=320, width=150)
 
 
-        b3 = ttk.Button(self, text="Start")
-        b3.place(x=220, y=400)
+        self.startButton = ttk.Button(self, text="Start",state='disabled',command=lambda : self.start_button_clicked())
+        self.startButton.place(x=220, y=400)
 
         # ----------- STYLES ------------
 
@@ -101,6 +102,7 @@ class SelectProductsWindow(ttk.Frame):
 
         #WelcomeWindow(self.master)
 
+
     def ok_button_clicked(self):
 
         print("Chosen option is: " + str(self.choose_datasource_buttons.get()))
@@ -123,7 +125,16 @@ class SelectProductsWindow(ttk.Frame):
 
         self.product_entry = AutocompleteEntry(self.product_list, self, state='normal')
         self.product_entry.place(x=30, y=320, width=150)
+        self.startButton.configure(state='normal')
 
+    def start_button_clicked(self):
+        if not self.product_entry.var.get():
+            showinfo("Error", "Proszę wybrać produkt")
+        else:
+            print("Wpisany produkt: "+self.product_entry.var.get())
+            newroot = Tk()
+            app = EvaluateWindow(self.product_entry.var.get(), self.chosen_datasource,newroot)
+            newroot.mainloop()
 
     def load_data(self):
         produced_data = ProduceData()
@@ -148,4 +159,7 @@ class LocationEntryPopup(Frame):
 
     def closing_popup(self):
         self.value = self.entry.get()
-        self.top.destroy()
+        if not self.value:
+            showinfo("Error", "Proszę uzupełnić lokalizację, przykładowy format: LOK_6883")
+        else:
+            self.top.destroy()
