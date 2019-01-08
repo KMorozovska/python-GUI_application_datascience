@@ -33,6 +33,8 @@ class EvaluateWindow(ttk.Frame):
 
     def layout(self):
 
+
+
         title = ttk.Label(self, text="Produkty \nnajczęściej kupowane razem \nz produktem: "+ str(self.chosen_item), style="title.TLabel")
         title.place(x=10, y=60)
 

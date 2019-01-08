@@ -19,9 +19,6 @@ class SelectProductsWindow(ttk.Frame):
 
     def layout(self):
 
-        b1 = ttk.Button(self, text="Powrót",command=lambda : self.back_to_mainwindow())
-        b1.place(x=10, y=20)
-
         title = ttk.Label(self, text="Analiza \nnajchętniej kupowanych razem \nproduktów", style="title.TLabel")
         title.place(x=0, y=60)
 
@@ -93,12 +90,6 @@ class SelectProductsWindow(ttk.Frame):
                         foreground="#B0BEC5",
                         font="Arial 12",
                         )
-
-    def back_to_mainwindow(self):
-        for widget in self.master.winfo_children():
-            widget.destroy()
-
-
 
 
     def ok_button_clicked(self):

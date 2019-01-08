@@ -75,7 +75,7 @@ class LoginWindow(ttk.Frame):
                 for widget in self.master.winfo_children():
                     widget.destroy()
 
-                WelcomeWindow(self.master)
+                SelectProductsWindow(self.master)
 
 
 
