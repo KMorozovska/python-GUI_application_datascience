@@ -1,8 +1,6 @@
-import tkinter.ttk as ttk
-from ProduceData import *
-from AutocompleteEntry import *
-from tkinter.messagebox import showinfo
 from EvaluateWindow import *
+from LocationEntryPopup import *
+from ProduceData import *
 
 
 class SelectProductsWindow(ttk.Frame):
@@ -100,7 +98,7 @@ class SelectProductsWindow(ttk.Frame):
         for widget in self.master.winfo_children():
             widget.destroy()
 
-        #WelcomeWindow(self.master)
+
 
 
     def ok_button_clicked(self):
@@ -131,35 +129,17 @@ class SelectProductsWindow(ttk.Frame):
         if not self.product_entry.var.get():
             showinfo("Error", "Proszę wybrać produkt")
         else:
-            print("Wpisany produkt: "+self.product_entry.var.get())
-            newroot = Tk()
-            app = EvaluateWindow(self.product_entry.var.get(), self.chosen_datasource,newroot)
-            newroot.mainloop()
+            for widget in self.master.winfo_children():
+                widget.destroy()
+
+            self.evaluation_list = self.produced_data.analyse_corelated_products(self.chosen_datasource, self.product_entry.var.get())
+            app = EvaluateWindow(self.product_entry.var.get(), self.evaluation_list,self.master)
 
     def load_data(self):
-        produced_data = ProduceData()
-        self.product_list = produced_data.list_of_products(self.chosen_datasource)
+        self.produced_data = ProduceData()
+        self.product_list = self.produced_data.list_of_products(self.chosen_datasource)
 
 
 def selected(self):
     print(self.choose_datasource_buttons.get())
 
-
-class LocationEntryPopup(Frame):
-    def __init__(self, master=None):
-        super().__init__(master)
-
-        self.top = Toplevel(master)
-        self.label = Label(self.top, text="Wpisz kod lokalizacji")
-        self.label.pack()
-        self.entry = Entry(self.top)
-        self.entry.pack()
-        self.button = Button(self.top, text='Ok', command=self.closing_popup)
-        self.button.pack()
-
-    def closing_popup(self):
-        self.value = self.entry.get()
-        if not self.value:
-            showinfo("Error", "Proszę uzupełnić lokalizację, przykładowy format: LOK_6883")
-        else:
-            self.top.destroy()

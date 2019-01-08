@@ -1,10 +1,9 @@
-from tkinter import *
-from WelcomeWindow import *
+from LoginWindow import *
 
 
 def main():
     root = Tk()
-    app = WelcomeWindow(root)
+    app = LoginWindow(root)
     root.mainloop()
 
 

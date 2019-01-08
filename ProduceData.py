@@ -1,5 +1,5 @@
 import pandas as pd
-from Constants import DATA_PATH
+from Constants import DATA_PATH,DATASET_SIZE
 
 
 class ProduceData:
@@ -7,14 +7,15 @@ class ProduceData:
     def __init__(self):
 
         # importujemy zbior danych, a dokladniej pierwsze 50000 rekordow - kto odwazny moze zmienic na wiecej
-        data = pd.read_csv('/home/kasia/PycharmProjects/lead-it/sources/paragony_ms.csv', sep=";", header=None,
-                           decimal=",", nrows=50000).reset_index(drop=True)
+        data = pd.read_csv(DATA_PATH, sep=";", header=None,
+                           decimal=",", nrows=DATASET_SIZE).reset_index(drop=True)
 
         # drobne porzadki
         data.columns = ['ID_LOKALIZACJI', 'MIASTO', 'ID_PRODUKTU', 'NAZWA_PRODUKTU', 'HIER_MATERIAL_GR0_ID',
                         'HIER_MATERIAL_GR0_OPIS', 'HIER_MATERIAL_GR1_ID', 'HIER_MATERIAL_GR1_OPIS',
                         'HIER_MATERIAL_GR2_ID', 'HIER_MATERIAL_GR2_OPIS', 'HIER_MATERIAL_GR3_ID', 'ID_KLIENT', 'DATA',
                         'GODZ', 'NR_PARAGONU', 'POZ_PARAGONU', 'KASA', 'WARTOSC_BRUTTO', 'VAT', 'ILOSC']
+        print(type(data.columns))
         self.data = data.drop(["KASA", "POZ_PARAGONU"], axis=1)
 
     def list_of_products(self,datasource):
@@ -40,6 +41,8 @@ class ProduceData:
 
         if datasource == "all":
             datasource = self.data
+        else:
+            datasource = self.data.loc[self.data["ID_LOKALIZACJI"] == datasource]
 
         # wyszukanie wszystkich paragonow gdzie pojawily sie szukany produkt
 
@@ -57,8 +60,8 @@ class ProduceData:
             datasource.query(zawartosc_query)[["ID_PRODUKTU", "NR_PARAGONU"]].sort_values(by="NR_PARAGONU").groupby(
             ["NR_PARAGONU"])["NR_PARAGONU"].count().rename("Ilosc_rzeczy_na_paragonie").reset_index().query(
             'Ilosc_rzeczy_na_paragonie > 1')
-        # paragony_z_wiecej_niz_jednym_produktem
 
+        # paragony_z_wiecej_niz_jednym_produktem
         lista_roznorodnych_paragonow = paragony_z_wiecej_niz_jednym_produktem["NR_PARAGONU"].tolist()
         zawartosc_query = 'NR_PARAGONU in ' + "[" + ", ".join(str(x) for x in lista_roznorodnych_paragonow) + "]"
 
@@ -67,5 +70,7 @@ class ProduceData:
         # wyswietlamy wszystkie obiekty kupione razem z Batony impulsowe 50 w takiej kolejnosci jak sie najczesciej powtarzaly
         interesujace_obiekty = interesujace_obiekty.groupby(['ID_PRODUKTU'])['ID_PRODUKTU'].count().rename(
             "Ilosc").reset_index().sort_values(by="Ilosc", ascending=False)
+
+        return interesujace_obiekty
 
 

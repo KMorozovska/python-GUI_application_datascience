@@ -1,6 +1,5 @@
 from SelectProductsWindow import *
 
-
 class WelcomeWindow(ttk.Frame):
 
     def __init__(self, master):
